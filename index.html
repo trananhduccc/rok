@@ -1,1 +1,148 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RoK Auto Center - rok.vnsmp.online</title>
+    <style>
+        * { box-sizing: border-box; }
+        body { font-family: 'Segoe UI', system-ui, sans-serif; background: #0f1419; color: #f5f6fa; margin: 0; padding: 15px; }
+        .container { max-width: 500px; margin: auto; background: #1e272e; padding: 20px; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); border: 1px solid #2f3640; }
+        h2 { text-align: center; color: #ffd32a; margin: 0 0 6px 0; font-size: 20px; }
+        .sub-header { text-align: center; color: #0fbcf9; font-size: 12px; margin-bottom: 16px; }
+        .master-btn { width: 100%; padding: 14px; font-size: 16px; font-weight: bold; border: none; border-radius: 10px; cursor: pointer; margin-bottom: 15px; transition: 0.2s; }
+        .btn-on { background: #05c46b; color: white; }
+        .btn-off { background: #ff3f34; color: white; }
+        .card { display: flex; justify-content: space-between; align-items: center; background: #2f3640; padding: 12px 15px; border-radius: 10px; margin-bottom: 10px; }
+        .card-title { font-weight: 600; font-size: 15px; }
+        .card-sub { font-size: 12px; color: #a4b0be; margin-top: 3px; }
+        input[type="checkbox"] { width: 22px; height: 22px; accent-color: #ffd32a; cursor: pointer; }
+        .input-group { background: #2f3640; padding: 12px; border-radius: 10px; margin-bottom: 12px; }
+        .input-group label { display: block; font-size: 12px; color: #d2dae2; margin-bottom: 5px; }
+        .input-row { display: flex; gap: 8px; }
+        .input-row input { width: 100%; padding: 8px 10px; border-radius: 6px; border: 1px solid #485460; background: #1e272e; color: white; font-size: 13px; }
+        .copy-btn { width: 100%; padding: 11px; background: #0fbcf9; color: #1e272e; font-weight: bold; border: none; border-radius: 8px; cursor: pointer; margin-top: 8px; }
+        .log-box { background: #090d10; color: #0be881; font-family: Consolas, monospace; font-size: 12px; height: 180px; overflow-y: auto; padding: 10px; border-radius: 8px; margin-top: 12px; border: 1px solid #353b48; white-space: pre-wrap; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>⚡ ROK AUTO DASHBOARD</h2>
+        <div class="sub-header">Hệ thống điều khiển & Tạo kịch bản tự động</div>
+
+        <button id="masterBtn" class="master-btn btn-on" onclick="toggleMaster()">▶ KÍCH HOẠT CẤU HÌNH AUTO</button>
+
+        <div class="card">
+            <div>
+                <div class="card-title">🌫️ Tự động Dò Sương (0.1s)</div>
+                <div class="card-sub">Canh do thám về tự Bật -> chờ 0.1s -> Tắt</div>
+            </div>
+            <input type="checkbox" id="fog" checked onchange="generateMobileScript()">
+        </div>
+
+        <div class="card">
+            <div>
+                <div class="card-title">⛰️ Tự động Dò Hang & Làng</div>
+                <div class="card-sub">Thăm dò hang động & nhận quà làng bộ lạc</div>
+            </div>
+            <input type="checkbox" id="cave" checked onchange="generateMobileScript()">
+        </div>
+
+        <div class="card">
+            <div>
+                <div class="card-title">🌾 Tự động Đi Farm Mỏ</div>
+                <div class="card-sub">Tìm mỏ tài nguyên và cử đạo quân rảnh</div>
+            </div>
+            <input type="checkbox" id="farm" onchange="generateMobileScript()">
+        </div>
+
+        <div class="card">
+            <div>
+                <div class="card-title">⚔️ Tự động Đánh / Kéo Man</div>
+                <div class="card-sub">Tự tìm kiếm và tấn công Man rợ</div>
+            </div>
+            <input type="checkbox" id="barb" onchange="generateMobileScript()">
+        </div>
+
+        <div class="input-group">
+            <label>⚙️ Tọa độ nút "Tự động thăm dò" trên điện thoại (X, Y) & Độ trễ (ms):</label>
+            <div class="input-row">
+                <input type="number" id="coordX" value="1450" placeholder="Tọa độ X" oninput="generateMobileScript()">
+                <input type="number" id="coordY" value="820" placeholder="Tọa độ Y" oninput="generateMobileScript()">
+                <input type="number" id="delayMs" value="100" placeholder="100ms = 0.1s" oninput="generateMobileScript()">
+            </div>
+            <button class="copy-btn" onclick="copyScript()">📋 COPY SCRIPT CHẠY TRÊN MOBILE (AUTOX.JS)</button>
+        </div>
+
+        <div class="log-box" id="logBox"></div>
+    </div>
+
+    <script>
+        let isRunning = false;
+
+        function generateMobileScript() {
+            const fog = document.getElementById('fog').checked;
+            const cave = document.getElementById('cave').checked;
+            const farm = document.getElementById('farm').checked;
+            const barb = document.getElementById('barb').checked;
+            const x = document.getElementById('coordX').value || 1450;
+            const y = document.getElementById('coordY').value || 820;
+            const delay = document.getElementById('delayMs').value || 100;
+
+            let code = `// === SCRIPT SINH TỰ ĐỘNG TỪ ROK.VNSMP.ONLINE ===\n`;
+            code += `auto.waitFor();\nif (!requestScreenCapture()) { toast("Cấp quyền chụp màn hình!"); exit(); }\n`;
+            code += `toast("Đã bật RoK Auto!");\n\n`;
+            code += `while (true) {\n  let screen = captureScreen();\n`;
+
+            if (fog) {
+                code += `  // [1] Dò sương Bật/Tắt ${delay}ms (0.1s)\n`;
+                code += `  let idle = images.read("/sdcard/Download/scout_idle.png");\n`;
+                code += `  if (idle && findImage(screen, idle, {threshold: 0.82})) {\n`;
+                code += `    click(${x} + random(-2,2), ${y} + random(-2,2));\n`;
+                code += `    sleep(${delay});\n`;
+                code += `    click(${x} + random(-2,2), ${y} + random(-2,2));\n`;
+                code += `    sleep(2500);\n  }\n`;
+            }
+            if (cave) {
+                code += `  // [2] Dò Hang & Làng bộ lạc\n`;
+                code += `  let village = images.read("/sdcard/Download/village_icon.png");\n`;
+                code += `  if (village) { let p = findImage(screen, village); if (p) click(p.x, p.y); }\n`;
+            }
+            if (farm) {
+                code += `  // [3] Tự động Đi Farm\n`;
+                code += `  let gather = images.read("/sdcard/Download/btn_gather.png");\n`;
+                code += `  if (gather) { let p = findImage(screen, gather); if (p) click(p.x, p.y); }\n`;
+            }
+            if (barb) {
+                code += `  // [4] Tự động Đánh Man rợ\n`;
+                code += `  let atk = images.read("/sdcard/Download/btn_attack.png");\n`;
+                code += `  if (atk) { let p = findImage(screen, atk); if (p) click(p.x, p.y); }\n`;
+            }
+
+            code += `  sleep(random(1000, 1500));\n}`;
+            document.getElementById('logBox').innerText = code;
+        }
+
+        function toggleMaster() {
+            isRunning = !isRunning;
+            const btn = document.getElementById('masterBtn');
+            if (isRunning) {
+                btn.innerText = "⏹ ĐANG HOẠT ĐỘNG (BẤM ĐỂ DỪNG)";
+                btn.className = "master-btn btn-off";
+            } else {
+                btn.innerText = "▶ KÍCH HOẠT CẤU HÌNH AUTO";
+                btn.className = "master-btn btn-on";
+            }
+        }
+
+        function copyScript() {
+            const text = document.getElementById('logBox').innerText;
+            navigator.clipboard.writeText(text);
+            alert("Đã copy Script! Hãy mở ứng dụng AutoX.js trên điện thoại và dán vào để chạy.");
+        }
+
+        generateMobileScript();
+    </script>
+</body>
+              </html>
 
