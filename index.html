@@ -1,148 +1,637 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RoK Auto Center - rok.vnsmp.online</title>
-    <style>
-        * { box-sizing: border-box; }
-        body { font-family: 'Segoe UI', system-ui, sans-serif; background: #0f1419; color: #f5f6fa; margin: 0; padding: 15px; }
-        .container { max-width: 500px; margin: auto; background: #1e272e; padding: 20px; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); border: 1px solid #2f3640; }
-        h2 { text-align: center; color: #ffd32a; margin: 0 0 6px 0; font-size: 20px; }
-        .sub-header { text-align: center; color: #0fbcf9; font-size: 12px; margin-bottom: 16px; }
-        .master-btn { width: 100%; padding: 14px; font-size: 16px; font-weight: bold; border: none; border-radius: 10px; cursor: pointer; margin-bottom: 15px; transition: 0.2s; }
-        .btn-on { background: #05c46b; color: white; }
-        .btn-off { background: #ff3f34; color: white; }
-        .card { display: flex; justify-content: space-between; align-items: center; background: #2f3640; padding: 12px 15px; border-radius: 10px; margin-bottom: 10px; }
-        .card-title { font-weight: 600; font-size: 15px; }
-        .card-sub { font-size: 12px; color: #a4b0be; margin-top: 3px; }
-        input[type="checkbox"] { width: 22px; height: 22px; accent-color: #ffd32a; cursor: pointer; }
-        .input-group { background: #2f3640; padding: 12px; border-radius: 10px; margin-bottom: 12px; }
-        .input-group label { display: block; font-size: 12px; color: #d2dae2; margin-bottom: 5px; }
-        .input-row { display: flex; gap: 8px; }
-        .input-row input { width: 100%; padding: 8px 10px; border-radius: 6px; border: 1px solid #485460; background: #1e272e; color: white; font-size: 13px; }
-        .copy-btn { width: 100%; padding: 11px; background: #0fbcf9; color: #1e272e; font-weight: bold; border: none; border-radius: 8px; cursor: pointer; margin-top: 8px; }
-        .log-box { background: #090d10; color: #0be881; font-family: Consolas, monospace; font-size: 12px; height: 180px; overflow-y: auto; padding: 10px; border-radius: 8px; margin-top: 12px; border: 1px solid #353b48; white-space: pre-wrap; }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>RoK Cloud Automation Infrastructure</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #0b0f19;
+      color: #e2e8f0;
+    }
+    .mono {
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .glass-card {
+      background: rgba(17, 24, 39, 0.85);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(55, 65, 81, 0.5);
+    }
+    /* Custom Scrollbar cho khung Log */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #0f172a;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #334155;
+      border-radius: 3px;
+    }
+    .pulse-dot {
+      box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+      animation: pulse-green 2s infinite;
+    }
+    @keyframes pulse-green {
+      0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
+      70% { transform: scale(1); box-shadow: 0 0 0 8px rgba(16, 185, 129, 0); }
+      100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+    }
+  </style>
 </head>
-<body>
-    <div class="container">
-        <h2>⚡ ROK AUTO DASHBOARD</h2>
-        <div class="sub-header">Hệ thống điều khiển & Tạo kịch bản tự động</div>
+<body class="min-h-screen flex flex-col justify-between selection:bg-indigo-500 selection:text-white">
 
-        <button id="masterBtn" class="master-btn btn-on" onclick="toggleMaster()">▶ KÍCH HOẠT CẤU HÌNH AUTO</button>
+  <!-- ================= MÀN HÌNH ĐĂNG NHẬP KEY ================= -->
+  <div id="authScreen" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#0b0f19]">
+    <div class="glass-card w-full max-w-md rounded-2xl p-6 sm:p-8 shadow-2xl border border-indigo-500/30">
+      <div class="text-center mb-6">
+        <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-indigo-600/20 border border-indigo-500/40 text-indigo-400 mb-4">
+          <i class="fa-solid fa-cloud-bolt text-3xl"></i>
+        </div>
+        <h1 class="text-2xl font-bold text-white tracking-tight">RoK Cloud Node v4.2</h1>
+        <p class="text-xs text-slate-400 mt-1">Hạ tầng điều khiển tự động hóa Rise of Kingdoms</p>
+      </div>
 
-        <div class="card">
-            <div>
-                <div class="card-title">🌫️ Tự động Dò Sương (0.1s)</div>
-                <div class="card-sub">Canh do thám về tự Bật -> chờ 0.1s -> Tắt</div>
-            </div>
-            <input type="checkbox" id="fog" checked onchange="generateMobileScript()">
+      <form id="loginForm" class="space-y-4">
+        <div>
+          <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">
+            License Key truy cập hệ thống
+          </label>
+          <div class="relative">
+            <span class="absolute inset-y-0 left-0 flex items-center pl-3.5 text-slate-500">
+              <i class="fa-solid fa-key"></i>
+            </span>
+            <input 
+              type="password" 
+              id="licenseKeyInput" 
+              placeholder="Nhập Access Key..." 
+              class="w-full pl-10 pr-10 py-3 bg-slate-900/90 border border-slate-700 rounded-xl text-sm text-white focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 mono"
+              required
+            >
+            <button type="button" id="togglePassBtn" class="absolute inset-y-0 right-0 flex items-center pr-3.5 text-slate-400 hover:text-white">
+              <i class="fa-regular fa-eye" id="eyeIcon"></i>
+            </button>
+          </div>
+          <p id="authError" class="hidden text-xs text-rose-400 mt-2 flex items-center gap-1.5">
+            <i class="fa-solid fa-circle-exclamation"></i> Key không hợp lệ! Vui lòng kiểm tra lại.
+          </p>
         </div>
 
-        <div class="card">
-            <div>
-                <div class="card-title">⛰️ Tự động Dò Hang & Làng</div>
-                <div class="card-sub">Thăm dò hang động & nhận quà làng bộ lạc</div>
-            </div>
-            <input type="checkbox" id="cave" checked onchange="generateMobileScript()">
-        </div>
+        <button 
+          type="submit" 
+          class="w-full py-3 px-4 bg-indigo-600 hover:bg-indigo-500 active:bg-indigo-700 text-white font-semibold rounded-xl shadow-lg shadow-indigo-600/30 transition flex items-center justify-center gap-2 text-sm"
+        >
+          <i class="fa-solid fa-shield-halved"></i> Xác thực & Kết nối Cloud
+        </button>
+      </form>
 
-        <div class="card">
-            <div>
-                <div class="card-title">🌾 Tự động Đi Farm Mỏ</div>
-                <div class="card-sub">Tìm mỏ tài nguyên và cử đạo quân rảnh</div>
-            </div>
-            <input type="checkbox" id="farm" onchange="generateMobileScript()">
-        </div>
+      <div class="mt-6 pt-5 border-t border-slate-800 flex items-center justify-between text-xs text-slate-500">
+        <span><i class="fa-solid fa-server mr-1 text-emerald-400"></i> Cluster: SG-VIP-01</span>
+        <span>Anti-Ban: <strong class="text-indigo-400">Humanizer v3</strong></span>
+      </div>
+    </div>
+  </div>
 
-        <div class="card">
-            <div>
-                <div class="card-title">⚔️ Tự động Đánh / Kéo Man</div>
-                <div class="card-sub">Tự tìm kiếm và tấn công Man rợ</div>
-            </div>
-            <input type="checkbox" id="barb" onchange="generateMobileScript()">
+  <!-- ================= BẢNG ĐIỀU KHIỂN CLOUD CHÍNH ================= -->
+  <div id="cloudPanel" class="hidden flex-1 flex flex-col max-w-7xl w-full mx-auto p-3 sm:p-6 gap-4 sm:gap-6">
+    
+    <!-- Header Hạ tầng Cloud -->
+    <header class="glass-card rounded-2xl p-4 flex flex-wrap items-center justify-between gap-4">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-indigo-600/20 border border-indigo-500/40 flex items-center justify-center text-indigo-400">
+          <i class="fa-solid fa-microchip text-xl"></i>
         </div>
-
-        <div class="input-group">
-            <label>⚙️ Tọa độ nút "Tự động thăm dò" trên điện thoại (X, Y) & Độ trễ (ms):</label>
-            <div class="input-row">
-                <input type="number" id="coordX" value="1450" placeholder="Tọa độ X" oninput="generateMobileScript()">
-                <input type="number" id="coordY" value="820" placeholder="Tọa độ Y" oninput="generateMobileScript()">
-                <input type="number" id="delayMs" value="100" placeholder="100ms = 0.1s" oninput="generateMobileScript()">
-            </div>
-            <button class="copy-btn" onclick="copyScript()">📋 COPY SCRIPT CHẠY TRÊN MOBILE (AUTOX.JS)</button>
+        <div>
+          <div class="flex items-center gap-2">
+            <h2 class="font-bold text-white text-base sm:text-lg">RoK Cloud Control Center</h2>
+            <span class="px-2 py-0.5 text-[10px] font-semibold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 rounded-full flex items-center gap-1">
+              <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 pulse-dot"></span> ONLINE
+            </span>
+          </div>
+          <p class="text-xs text-slate-400 mono">Key: <span class="text-indigo-400 font-semibold">TranAnhDuc</span> | Node: <span id="nodeName">VN-Cloud-ADB-01</span></p>
         </div>
+      </div>
 
-        <div class="log-box" id="logBox"></div>
+      <div class="flex items-center gap-2 sm:gap-4 w-full sm:w-auto justify-between sm:justify-end border-t sm:border-t-0 pt-3 sm:pt-0 border-slate-800">
+        <div class="text-xs">
+          <span class="text-slate-400 block">Độ trễ ADB</span>
+          <span id="pingDisplay" class="font-semibold text-emerald-400 mono">24 ms</span>
+        </div>
+        <div class="text-xs">
+          <span class="text-slate-400 block">Chế độ chạy</span>
+          <select id="runModeSelect" class="bg-slate-900 border border-slate-700 rounded-lg px-2 py-1 text-xs text-white focus:outline-none focus:border-indigo-500">
+            <option value="sim">Cloud Simulator (Test UI)</option>
+            <option value="ws">Kết nối ADB WebSocket thật</option>
+          </select>
+        </div>
+        <button id="logoutBtn" class="px-3 py-2 rounded-xl bg-slate-800 hover:bg-rose-950/60 hover:text-rose-300 text-slate-300 text-xs font-medium border border-slate-700 transition">
+          <i class="fa-solid fa-power-off sm:mr-1"></i> <span class="hidden sm:inline">Thoát</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Khung cấu hình WebSocket ADB (Ẩn mặc định, hiện khi chọn Kết nối thật) -->
+    <div id="wsConfigBox" class="hidden glass-card rounded-2xl p-4 border border-amber-500/40 bg-amber-950/10">
+      <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+        <div class="text-xs text-amber-200">
+          <i class="fa-solid fa-plug-circle-bolt mr-1"></i>
+          <strong>Cấu hình cầu nối ADB / Cloud Phone:</strong> Nhập địa chỉ WebSocket của máy chủ Python/AutoJS đang chạy cùng giả lập hoặc Cloud Phone.
+        </div>
+        <div class="flex w-full sm:w-auto gap-2">
+          <input id="wsUrlInput" type="text" value="ws://127.0.0.1:8080/rok-bridge" class="flex-1 sm:w-64 px-3 py-1.5 bg-slate-900 border border-slate-700 rounded-lg text-xs mono text-white">
+          <button id="connectWsBtn" class="px-3 py-1.5 bg-amber-600 hover:bg-amber-500 text-white rounded-lg text-xs font-semibold whitespace-nowrap">
+            Kết nối Node
+          </button>
+        </div>
+      </div>
     </div>
 
-    <script>
-        let isRunning = false;
+    <!-- Lưới điều khiển chính (Responsive 1 cột trên ĐT, 3 cột trên PC) -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-6 flex-1">
+      
+      <!-- Cột Trái: 3 Chức năng Game & Cấu hình Như Người Thật (7/12 cột) -->
+      <div class="lg:col-span-7 flex flex-col gap-4">
+        
+        <!-- 3 Module Chức năng chính -->
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
+          
+          <!-- Module 1: Dò Sương -->
+          <div class="glass-card rounded-2xl p-4 flex flex-col justify-between border-t-2 border-t-sky-500">
+            <div>
+              <div class="flex items-center justify-between mb-3">
+                <span class="w-9 h-9 rounded-xl bg-sky-500/20 text-sky-400 flex items-center justify-center">
+                  <i class="fa-solid fa-compass text-lg"></i>
+                </span>
+                <label class="relative inline-flex items-center cursor-pointer">
+                  <input type="checkbox" id="toggleFog" class="sr-only peer" checked>
+                  <div class="w-10 h-5 bg-slate-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-sky-500"></div>
+                </label>
+              </div>
+              <h3 class="font-bold text-white text-sm">Dò Sương Tự Động</h3>
+              <p class="text-[11px] text-slate-400 mt-1">Tự động nhận diện trại trinh sát, ưu tiên mở vùng sương mù gần nhất.</p>
+            </div>
+            <div class="mt-4 pt-3 border-t border-slate-800/80 space-y-2 text-xs">
+              <div class="flex justify-between items-center">
+                <span class="text-slate-400">Số trinh sát:</span>
+                <select id="scoutCount" class="bg-slate-900 border border-slate-700 rounded px-2 py-0.5 text-white text-xs">
+                  <option value="1">1 Trinh sát</option>
+                  <option value="2">2 Trinh sát</option>
+                  <option value="3" selected>3 Trinh sát</option>
+                </select>
+              </div>
+              <div class="flex justify-between items-center">
+                <span class="text-slate-400">Đã mở:</span>
+                <span id="fogStat" class="mono font-semibold text-sky-400">0 ô</span>
+              </div>
+            </div>
+          </div>
 
-        function generateMobileScript() {
-            const fog = document.getElementById('fog').checked;
-            const cave = document.getElementById('cave').checked;
-            const farm = document.getElementById('farm').checked;
-            const barb = document.getElementById('barb').checked;
-            const x = document.getElementById('coordX').value || 1450;
-            const y = document.getElementById('coordY').value || 820;
-            const delay = document.getElementById('delayMs').value || 100;
+          <!-- Module 2: Dò Hang & Làng -->
+          <div class="glass-card rounded-2xl p-4 flex flex-col justify-between border-t-2 border-t-amber-500">
+            <div>
+              <div class="flex items-center justify-between mb-3">
+                <span class="w-9 h-9 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center">
+                  <i class="fa-solid fa-mountain-sun text-lg"></i>
+                </span>
+                <label class="relative inline-flex items-center cursor-pointer">
+                  <input type="checkbox" id="toggleCave" class="sr-only peer" checked>
+                  <div class="w-10 h-5 bg-slate-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-amber-500"></div>
+                </label>
+              </div>
+              <h3 class="font-bold text-white text-sm">Dò Hang & Làng Bộ Lạc</h3>
+              <p class="text-[11px] text-slate-400 mt-1">Quét tọa độ hang động (Cao/Trung/Thấp) và thu thập quà làng bộ lạc.</p>
+            </div>
+            <div class="mt-4 pt-3 border-t border-slate-800/80 space-y-2 text-xs">
+              <div class="flex justify-between items-center">
+                <span class="text-slate-400">Ưu tiên:</span>
+                <select id="cavePriority" class="bg-slate-900 border border-slate-700 rounded px-2 py-0.5 text-white text-xs">
+                  <option value="Hang Cao + Làng">Hang Cao + Làng</option>
+                  <option value="Tất cả Hang">Tất cả Hang</option>
+                  <option value="Chỉ Làng bộ lạc">Chỉ Làng bộ lạc</option>
+                </select>
+              </div>
+              <div class="flex justify-between items-center">
+                <span class="text-slate-400">Đã dò:</span>
+                <span id="caveStat" class="mono font-semibold text-amber-400">0 điểm</span>
+              </div>
+            </div>
+          </div>
 
-            let code = `// === SCRIPT SINH TỰ ĐỘNG TỪ ROK.VNSMP.ONLINE ===\n`;
-            code += `auto.waitFor();\nif (!requestScreenCapture()) { toast("Cấp quyền chụp màn hình!"); exit(); }\n`;
-            code += `toast("Đã bật RoK Auto!");\n\n`;
-            code += `while (true) {\n  let screen = captureScreen();\n`;
+          <!-- Module 3: Kéo Man (Chain Barbarians) -->
+          <div class="glass-card rounded-2xl p-4 flex flex-col justify-between border-t-2 border-t-rose-500">
+            <div>
+              <div class="flex items-center justify-between mb-3">
+                <span class="w-9 h-9 rounded-xl bg-rose-500/20 text-rose-400 flex items-center justify-center">
+                  <i class="fa-solid fa-skull-crossbones text-lg"></i>
+                </span>
+                <label class="relative inline-flex items-center cursor-pointer">
+                  <input type="checkbox" id="toggleBarb" class="sr-only peer" checked>
+                  <div class="w-10 h-5 bg-slate-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-rose-500"></div>
+                </label>
+              </div>
+              <h3 class="font-bold text-white text-sm">Kéo Man Tự Động (AoE)</h3>
+              <p class="text-[11px] text-slate-400 mt-1">Tìm man rợ trong bán kính AoE, căn góc kéo lính tránh về thành mất AP.</p>
+            </div>
+            <div class="mt-4 pt-3 border-t border-slate-800/80 space-y-2 text-xs">
+              <div class="flex justify-between items-center">
+                <span class="text-slate-400">Tướng chính:</span>
+                <select id="commanderSelect" class="bg-slate-900 border border-slate-700 rounded px-2 py-0.5 text-white text-xs">
+                  <option value="Richard + YSG">Richard + YSG</option>
+                  <option value="Lohar + Æthelflæd">Lohar + Æthelflæd</option>
+                  <option value="Hạng Vũ + YSG">Hạng Vũ + YSG</option>
+                </select>
+              </div>
+              <div class="flex justify-between items-center">
+                <span class="text-slate-400">Man đã diệt:</span>
+                <span id="barbStat" class="mono font-semibold text-rose-400">0 đạo</span>
+              </div>
+            </div>
+          </div>
 
-            if (fog) {
-                code += `  // [1] Dò sương Bật/Tắt ${delay}ms (0.1s)\n`;
-                code += `  let idle = images.read("/sdcard/Download/scout_idle.png");\n`;
-                code += `  if (idle && findImage(screen, idle, {threshold: 0.82})) {\n`;
-                code += `    click(${x} + random(-2,2), ${y} + random(-2,2));\n`;
-                code += `    sleep(${delay});\n`;
-                code += `    click(${x} + random(-2,2), ${y} + random(-2,2));\n`;
-                code += `    sleep(2500);\n  }\n`;
-            }
-            if (cave) {
-                code += `  // [2] Dò Hang & Làng bộ lạc\n`;
-                code += `  let village = images.read("/sdcard/Download/village_icon.png");\n`;
-                code += `  if (village) { let p = findImage(screen, village); if (p) click(p.x, p.y); }\n`;
-            }
-            if (farm) {
-                code += `  // [3] Tự động Đi Farm\n`;
-                code += `  let gather = images.read("/sdcard/Download/btn_gather.png");\n`;
-                code += `  if (gather) { let p = findImage(screen, gather); if (p) click(p.x, p.y); }\n`;
-            }
-            if (barb) {
-                code += `  // [4] Tự động Đánh Man rợ\n`;
-                code += `  let atk = images.read("/sdcard/Download/btn_attack.png");\n`;
-                code += `  if (atk) { let p = findImage(screen, atk); if (p) click(p.x, p.y); }\n`;
-            }
+        </div>
 
-            code += `  sleep(random(1000, 1500));\n}`;
-            document.getElementById('logBox').innerText = code;
-        }
+        <!-- Cấu hình Hành vi "Như Người Thật" (Humanizer Engine) -->
+        <div class="glass-card rounded-2xl p-4 sm:p-5">
+          <div class="flex items-center justify-between mb-4">
+            <div class="flex items-center gap-2">
+              <i class="fa-solid fa-user-secret text-indigo-400"></i>
+              <h3 class="font-bold text-white text-sm sm:text-base">Thuật Toán Mô Phỏng Người Thật (Anti-Ban Humanizer)</h3>
+            </div>
+            <span class="text-[11px] px-2 py-0.5 rounded bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">Đang kích hoạt</span>
+          </div>
 
-        function toggleMaster() {
-            isRunning = !isRunning;
-            const btn = document.getElementById('masterBtn');
-            if (isRunning) {
-                btn.innerText = "⏹ ĐANG HOẠT ĐỘNG (BẤM ĐỂ DỪNG)";
-                btn.className = "master-btn btn-off";
-            } else {
-                btn.innerText = "▶ KÍCH HOẠT CẤU HÌNH AUTO";
-                btn.className = "master-btn btn-on";
-            }
-        }
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
+            <div class="bg-slate-900/70 p-3 rounded-xl border border-slate-800">
+              <div class="flex justify-between mb-1">
+                <span class="text-slate-300 font-medium">Độ trễ ngẫu nhiên giữa các thao tác:</span>
+                <span id="delayVal" class="mono text-indigo-400">1.8s - 4.5s</span>
+              </div>
+              <input type="range" id="humanDelayRange" min="1" max="5" value="2" class="w-full accent-indigo-500 cursor-pointer">
+              <p class="text-[11px] text-slate-500 mt-1">Không bao giờ click cố định 1 nhịp để tránh hệ thống phát hiện auto-click.</p>
+            </div>
 
-        function copyScript() {
-            const text = document.getElementById('logBox').innerText;
-            navigator.clipboard.writeText(text);
-            alert("Đã copy Script! Hãy mở ứng dụng AutoX.js trên điện thoại và dán vào để chạy.");
-        }
+            <div class="bg-slate-900/70 p-3 rounded-xl border border-slate-800">
+              <div class="flex justify-between mb-1">
+                <span class="text-slate-300 font-medium">Sai số điểm chạm (Click Jitter):</span>
+                <span id="jitterVal" class="mono text-indigo-400">±12 px</span>
+              </div>
+              <input type="range" id="jitterRange" min="4" max="25" value="12" class="w-full accent-indigo-500 cursor-pointer">
+              <p class="text-[11px] text-slate-500 mt-1">Tự động lệch tâm nút bấm ngẫu nhiên giống ngón tay người chạm trên màn hình.</p>
+            </div>
 
-        generateMobileScript();
-    </script>
+            <div class="flex items-center justify-between bg-slate-900/70 p-3 rounded-xl border border-slate-800">
+              <div>
+                <span class="text-slate-200 font-medium block">Vuốt đường cong Bézier</span>
+                <span class="text-[11px] text-slate-500">Kéo bản đồ và kéo man theo quỹ đạo cong tự nhiên</span>
+              </div>
+              <input type="checkbox" id="bezierSwipe" checked class="w-4 h-4 accent-indigo-500 rounded">
+            </div>
+
+            <div class="flex items-center justify-between bg-slate-900/70 p-3 rounded-xl border border-slate-800">
+              <div>
+                <span class="text-slate-200 font-medium block">Tự động dừng giải Captcha / Nghỉ ngơi</span>
+                <span class="text-[11px] text-slate-500">Tạm nghỉ 3-5 phút sau mỗi 45 phút hoạt động</span>
+              </div>
+              <input type="checkbox" id="autoRest" checked class="w-4 h-4 accent-indigo-500 rounded">
+            </div>
+          </div>
+
+          <!-- Thanh nút Bắt đầu / Tạm dừng Cloud -->
+          <div class="mt-5 flex flex-wrap sm:flex-nowrap gap-3">
+            <button id="startCloudBtn" class="flex-1 py-3 px-4 bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white font-bold rounded-xl shadow-lg shadow-emerald-600/25 transition flex items-center justify-center gap-2 text-sm">
+              <i class="fa-solid fa-play"></i> KHỞI CHẠY CLOUD AUTO
+            </button>
+            <button id="stopCloudBtn" disabled class="flex-1 py-3 px-4 bg-slate-800 text-slate-500 font-bold rounded-xl border border-slate-700 transition flex items-center justify-center gap-2 text-sm cursor-not-allowed">
+              <i class="fa-solid fa-stop"></i> DỪNG KHẨN CẤP
+            </button>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Cột Phải: Màn hình Terminal Log Thời Gian Thực (5/12 cột) -->
+      <div class="lg:col-span-5 flex flex-col glass-card rounded-2xl overflow-hidden border border-slate-700/70 h-[420px] lg:h-auto">
+        <div class="bg-slate-900/90 px-4 py-3 border-b border-slate-800 flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <span class="w-2.5 h-2.5 rounded-full bg-rose-500"></span>
+            <span class="w-2.5 h-2.5 rounded-full bg-amber-500"></span>
+            <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
+            <span class="text-xs font-semibold text-slate-300 ml-2 mono">cloud-worker@rok-engine:~# tail -f live.log</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <button id="clearLogBtn" class="text-[11px] text-slate-400 hover:text-white px-2 py-1 rounded bg-slate-800 border border-slate-700">
+              <i class="fa-solid fa-trash-can mr-1"></i>Xóa Log
+            </button>
+          </div>
+        </div>
+
+        <!-- Khung hiển thị Log -->
+        <div id="logContainer" class="flex-1 p-4 overflow-y-auto mono text-xs space-y-2 bg-[#070a12]">
+          <!-- Log sẽ được chèn tự động bằng JS -->
+        </div>
+
+        <!-- Thanh trạng thái dưới cùng của Log -->
+        <div class="bg-slate-900/90 px-4 py-2.5 border-t border-slate-800 flex items-center justify-between text-[11px] text-slate-400 mono">
+          <span id="workerStatus"><i class="fa-solid fa-circle-pause text-amber-400 mr-1"></i> Trạng thái: Đang chờ lệnh</span>
+          <span id="uptimeCounter">Uptime: 00:00:00</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ================= JAVASCRIPT XỬ LÝ LOGIC ================= -->
+  <script>
+    // --- 1. CẤU HÌNH BẢO MẬT KEY ---
+    const VALID_KEY = "TranAnhDuc";
+    
+    const authScreen = document.getElementById('authScreen');
+    const cloudPanel = document.getElementById('cloudPanel');
+    const loginForm = document.getElementById('loginForm');
+    const licenseKeyInput = document.getElementById('licenseKeyInput');
+    const authError = document.getElementById('authError');
+    const togglePassBtn = document.getElementById('togglePassBtn');
+    const eyeIcon = document.getElementById('eyeIcon');
+    const logoutBtn = document.getElementById('logoutBtn');
+
+    // Ẩn/Hiện mật khẩu khi nhập Key trên điện thoại/PC
+    togglePassBtn.addEventListener('click', () => {
+      if (licenseKeyInput.type === 'password') {
+        licenseKeyInput.type = 'text';
+        eyeIcon.classList.replace('fa-eye', 'fa-eye-slash');
+      } else {
+        licenseKeyInput.type = 'password';
+        eyeIcon.classList.replace('fa-eye-slash', 'fa-eye');
+      }
+    });
+
+    // Kiểm tra phiên đăng nhập đã lưu
+    if (sessionStorage.getItem('rok_cloud_auth') === VALID_KEY) {
+      unlockCloudPanel();
+    }
+
+    loginForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const inputKey = licenseKeyInput.value.trim();
+      if (inputKey === VALID_KEY) {
+        sessionStorage.setItem('rok_cloud_auth', VALID_KEY);
+        authError.classList.add('hidden');
+        unlockCloudPanel();
+      } else {
+        authError.classList.remove('hidden');
+        licenseKeyInput.classList.add('border-rose-500');
+      }
+    });
+
+    logoutBtn.addEventListener('click', () => {
+      stopAutomation();
+      sessionStorage.removeItem('rok_cloud_auth');
+      licenseKeyInput.value = '';
+      cloudPanel.classList.add('hidden');
+      authScreen.classList.remove('hidden');
+    });
+
+    function unlockCloudPanel() {
+      authScreen.classList.add('hidden');
+      cloudPanel.classList.remove('hidden');
+      appendLog('SYSTEM', 'Xác thực Key "TranAnhDuc" thành công. Đã kết nối tới cụm Cloud VN-Cloud-ADB-01.', 'text-emerald-400');
+      appendLog('HUMANIZER', 'Đã nạp cấu hình Anti-Ban: Đường cong Bézier + Độ trễ ngẫu nhiên như người thật.', 'text-indigo-400');
+    }
+
+    // --- 2. HỆ THỐNG LOG & ĐIỀU KHIỂN AUTO ---
+    const logContainer = document.getElementById('logContainer');
+    const clearLogBtn = document.getElementById('clearLogBtn');
+    const startCloudBtn = document.getElementById('startCloudBtn');
+    const stopCloudBtn = document.getElementById('stopCloudBtn');
+    const workerStatus = document.getElementById('workerStatus');
+    const uptimeCounter = document.getElementById('uptimeCounter');
+
+    // Các công tắc và thông số
+    const toggleFog = document.getElementById('toggleFog');
+    const toggleCave = document.getElementById('toggleCave');
+    const toggleBarb = document.getElementById('toggleBarb');
+    const scoutCount = document.getElementById('scoutCount');
+    const cavePriority = document.getElementById('cavePriority');
+    const commanderSelect = document.getElementById('commanderSelect');
+    const humanDelayRange = document.getElementById('humanDelayRange');
+    const jitterRange = document.getElementById('jitterRange');
+    const delayVal = document.getElementById('delayVal');
+    const jitterVal = document.getElementById('jitterVal');
+
+    // Thống kê bộ đếm
+    let stats = { fog: 0, cave: 0, barb: 0 };
+    let isRunning = false;
+    let loopTimer = null;
+    let uptimeTimer = null;
+    let secondsElapsed = 0;
+    let wsConnection = null;
+
+    // Cập nhật thanh trượt Humanizer
+    humanDelayRange.addEventListener('input', () => {
+      const base = parseFloat(humanDelayRange.value);
+      delayVal.textContent = `${base.toFixed(1)}s - ${(base + 2.4).toFixed(1)}s`;
+    });
+
+    jitterRange.addEventListener('input', () => {
+      jitterVal.textContent = `±${jitterRange.value} px`;
+    });
+
+    clearLogBtn.addEventListener('click', () => {
+      logContainer.innerHTML = '';
+      appendLog('SYSTEM', 'Đã làm sạch bộ nhớ đệm Log.', 'text-slate-400');
+    });
+
+    function getTimeString() {
+      const now = new Date();
+      return now.toTimeString().split(' ')[0];
+    }
+
+    function appendLog(tag, message, colorClass = 'text-slate-300') {
+      const div = document.createElement('div');
+      div.className = 'leading-relaxed border-b border-slate-900/80 pb-1';
+      div.innerHTML = `<span class="text-slate-500">[${getTimeString()}]</span> <span class="font-semibold ${colorClass}">[${tag}]</span> <span class="text-slate-200">${message}</span>`;
+      logContainer.appendChild(div);
+      logContainer.scrollTop = logContainer.scrollHeight;
+    }
+
+    // Sinh tọa độ và độ lệch ngẫu nhiên như người thật
+    function randInt(min, max) {
+      return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+
+    function generateHumanClickInfo() {
+      const jitter = parseInt(jitterRange.value, 10);
+      const offsetX = randInt(-jitter, jitter);
+      const offsetY = randInt(-jitter, jitter);
+      const swipeDuration = randInt(280, 640);
+      return `(Lệch tâm: ${offsetX >= 0 ? '+' + offsetX : offsetX}px, ${offsetY >= 0 ? '+' + offsetY : offsetY}px | Chạm giữ: ${swipeDuration}ms)`;
+    }
+
+    // Thực thi các bước tự động hóa
+    function executeAutomationStep() {
+      if (!isRunning) return;
+
+      const activeTasks = [];
+      if (toggleFog.checked) activeTasks.push('FOG');
+      if (toggleCave.checked) activeTasks.push('CAVE');
+      if (toggleBarb.checked) activeTasks.push('BARB');
+
+      if (activeTasks.length === 0) {
+        appendLog('WARNING', 'Chưa bật chức năng nào (Dò Sương / Dò Hang / Kéo Man). Vui lòng bật ít nhất 1 mục!', 'text-amber-400');
+        stopAutomation();
+        return;
+      }
+
+      // Chọn ngẫu nhiên 1 tác vụ trong các tác vụ đang bật để mô phỏng người chơi chuyển đổi thao tác
+      const task = activeTasks[randInt(0, activeTasks.length - 1)];
+      const coordX = randInt(120, 1180);
+      const coordY = randInt(150, 1150);
+      const humanMeta = generateHumanClickInfo();
+
+      if (task === 'FOG') {
+        const scoutIdx = randInt(1, parseInt(scoutCount.value, 10));
+        stats.fog++;
+        document.getElementById('fogStat').textContent = `${stats.fog} ô`;
+        appendLog(
+          'DÒ SƯƠNG',
+          `Điều Trinh sát #${scoutIdx} mở sương tại #K3124 (X:${coordX}, Y:${coordY}) ${humanMeta}`,
+          'text-sky-400'
+        );
+      } else if (task === 'CAVE') {
+        stats.cave++;
+        document.getElementById('caveStat').textContent = `${stats.cave} điểm`;
+        const prio = cavePriority.value;
+        const targetType = Math.random() > 0.45 ? `Hang Bí Ẩn (${prio})` : 'Làng Bộ Lạc (Nhận quà)';
+        appendLog(
+          'DÒ HANG',
+          `Phát hiện ${targetType} tại (X:${coordX}, Y:${coordY}) → Đã gửi trinh sát khám phá ${humanMeta}`,
+          'text-amber-400'
+        );
+      } else if (task === 'BARB') {
+        stats.barb++;
+        document.getElementById('barbStat').textContent = `${stats.barb} đạo`;
+        const cmd = commanderSelect.value;
+        const barbLv = randInt(18, 25);
+        const chained = randInt(2, 4);
+        appendLog(
+          'KÉO MAN',
+          `Đạo [${cmd}] tấn công Man Rợ Lv.${barbLv} tại (X:${coordX}, Y:${coordY}) → Kéo vòng cung Bézier dính thêm ${chained} đạo cạnh bên (Giữ AP không về thành) ${humanMeta}`,
+          'text-rose-400'
+        );
+      }
+
+      // Gửi payload sang WebSocket nếu đang ở chế độ kết nối ADB thật
+      if (wsConnection && wsConnection.readyState === WebSocket.OPEN) {
+        wsConnection.send(JSON.stringify({
+          action: task,
+          coord: { x: coordX, y: coordY },
+          jitter: parseInt(jitterRange.value, 10),
+          bezier: document.getElementById('bezierSwipe').checked
+        }));
+      }
+
+      // Tính toán thời gian nghỉ ngẫu nhiên cho bước tiếp theo (Như người thật)
+      const baseDelaySec = parseFloat(humanDelayRange.value);
+      const nextDelayMs = randInt(baseDelaySec * 1000, (baseDelaySec + 2.4) * 1000);
+
+      // Thỉnh thoảng chèn hành vi người thật (xoay bản đồ, kiểm tra thư, nghỉ ngơi ngắn)
+      if (Math.random() < 0.18) {
+        setTimeout(() => {
+          if (isRunning) {
+            appendLog('HUMANIZER', `Mô phỏng người thật: Vuốt nhẹ bản đồ & dừng quan sát ${ (nextDelayMs / 1000).toFixed(1) }s trước thao tác tiếp theo...`, 'text-indigo-400');
+          }
+        }, Math.floor(nextDelayMs / 2));
+      }
+
+      loopTimer = setTimeout(executeAutomationStep, nextDelayMs);
+    }
+
+    function startAutomation() {
+      if (isRunning) return;
+      isRunning = true;
+
+      startCloudBtn.disabled = true;
+      startCloudBtn.classList.replace('bg-emerald-600', 'bg-slate-800');
+      startCloudBtn.classList.replace('text-white', 'text-slate-500');
+      startCloudBtn.classList.add('cursor-not-allowed');
+
+      stopCloudBtn.disabled = false;
+      stopCloudBtn.classList.replace('bg-slate-800', 'bg-rose-600');
+      stopCloudBtn.classList.replace('text-slate-500', 'text-white');
+      stopCloudBtn.classList.remove('cursor-not-allowed');
+
+      workerStatus.innerHTML = `<i class="fa-solid fa-circle-play text-emerald-400 mr-1"></i> Trạng thái: Đang chạy Auto (Humanized)`;
+      appendLog('CLOUD-CORE', 'Bắt đầu tiến trình tự động hóa Rise of Kingdoms...', 'text-emerald-400');
+
+      executeAutomationStep();
+
+      uptimeTimer = setInterval(() => {
+        secondsElapsed++;
+        const hrs = String(Math.floor(secondsElapsed / 3600)).padStart(2, '0');
+        const mins = String(Math.floor((secondsElapsed % 3600) / 60)).padStart(2, '0');
+        const secs = String(secondsElapsed % 60).padStart(2, '0');
+        uptimeCounter.textContent = `Uptime: ${hrs}:${mins}:${secs}`;
+      }, 1000);
+    }
+
+    function stopAutomation() {
+      if (!isRunning) return;
+      isRunning = false;
+      clearTimeout(loopTimer);
+      clearInterval(uptimeTimer);
+
+      startCloudBtn.disabled = false;
+      startCloudBtn.classList.replace('bg-slate-800', 'bg-emerald-600');
+      startCloudBtn.classList.replace('text-slate-500', 'text-white');
+      startCloudBtn.classList.remove('cursor-not-allowed');
+
+      stopCloudBtn.disabled = true;
+      stopCloudBtn.classList.replace('bg-rose-600', 'bg-slate-800');
+      stopCloudBtn.classList.replace('text-white', 'text-slate-500');
+      stopCloudBtn.classList.add('cursor-not-allowed');
+
+      workerStatus.innerHTML = `<i class="fa-solid fa-circle-pause text-amber-400 mr-1"></i> Trạng thái: Đã tạm dừng`;
+      appendLog('CLOUD-CORE', 'Đã dừng toàn bộ tác vụ tự động hóa theo lệnh người dùng.', 'text-rose-400');
+    }
+
+    startCloudBtn.addEventListener('click', startAutomation);
+    stopCloudBtn.addEventListener('click', stopAutomation);
+
+    // --- 3. CHẾ ĐỘ KẾT NỐI WEBSOCKET ADB THẬT ---
+    const runModeSelect = document.getElementById('runModeSelect');
+    const wsConfigBox = document.getElementById('wsConfigBox');
+    const connectWsBtn = document.getElementById('connectWsBtn');
+    const wsUrlInput = document.getElementById('wsUrlInput');
+
+    runModeSelect.addEventListener('change', () => {
+      if (runModeSelect.value === 'ws') {
+        wsConfigBox.classList.remove('hidden');
+      } else {
+        wsConfigBox.classList.add('hidden');
+        if (wsConnection) wsConnection.close();
+      }
+    });
+
+    connectWsBtn.addEventListener('click', () => {
+      const url = wsUrlInput.value.trim();
+      appendLog('ADB-BRIDGE', `Đang thử kết nối tới WebSocket Node: ${url}...`, 'text-amber-400');
+      try {
+        wsConnection = new WebSocket(url);
+        wsConnection.onopen = () => {
+          appendLog('ADB-BRIDGE', `Kết nối thành công tới ADB Server! Mọi lệnh trên Web sẽ truyền thẳng vào game.`, 'text-emerald-400');
+        };
+        wsConnection.onerror = () => {
+          appendLog('ADB-BRIDGE', `Không tìm thấy ADB Server tại ${url}. Hệ thống tự động duy trì chế độ Cloud Simulator để bạn test giao diện.`, 'text-rose-400');
+        };
+      } catch (err) {
+        appendLog('ADB-BRIDGE', `Lỗi cú pháp URL WebSocket: ${err.message}`, 'text-rose-400');
+      }
+    });
+  </script>
 </body>
-              </html>
-
+</html>
